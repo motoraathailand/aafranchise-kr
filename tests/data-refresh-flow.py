@@ -42,7 +42,7 @@ with sync_playwright() as p:
     pg.click('[data-act=age]'); pg.click('[data-act=agree]'); pg.wait_for_timeout(800)
     # 1) 온라인 새 버전: 부팅 4초 뒤 비차단 갱신 → 저장
     pg.wait_for_timeout(5500)
-    stored = pg.evaluate("JSON.parse(localStorage.getItem('frkr.data.remote')||'null')")
+    stored = pg.evaluate("new Promise((ok,fail)=>{const r=indexedDB.open('frkr-catalog',1);r.onsuccess=()=>{const q=r.result.transaction('catalog','readonly').objectStore('catalog').get('remote');q.onsuccess=()=>ok(q.result||JSON.parse(localStorage.getItem('frkr.data.remote')||'null'));q.onerror=()=>fail(q.error)};r.onerror=()=>fail(r.error)})")
     check(stored is not None and stored['meta']['version'] == BV + 7, 'newer remote data stored on device')
     check(any(u.endswith('/meta.json') for u in hits) and any(u.endswith('/brands.json') for u in hits), 'meta.json then brands.json fetched')
     check(pg.evaluate("FR.ctx && 1") and dm(pg, "D.meta().version") == BV, 'running session still shows the bundled version (applies next start)')
@@ -54,11 +54,11 @@ with sync_playwright() as p:
     # 2) 하루 뒤 + 오프라인/500/나쁜 데이터 → 저장본 유지
     for m in ['offline', '500', 'bad']:
         mode['v'] = m; pg.evaluate("localStorage.setItem('frkr.data.checked','1')"); pg.reload(); pg.wait_for_timeout(6500)
-        st = pg.evaluate("JSON.parse(localStorage.getItem('frkr.data.remote')||'null')")
+        st = pg.evaluate("new Promise((ok,fail)=>{const r=indexedDB.open('frkr-catalog',1);r.onsuccess=()=>{const q=r.result.transaction('catalog','readonly').objectStore('catalog').get('remote');q.onsuccess=()=>ok(q.result||JSON.parse(localStorage.getItem('frkr.data.remote')||'null'));q.onerror=()=>fail(q.error)};r.onerror=()=>fail(r.error)})")
         check(st is not None and st['meta']['version'] == BV + 7, f'{m}: stored data kept'); check(pg.evaluate("document.querySelectorAll('.screen').length") >= 1, f'{m}: app still alive')
         check(dm(pg, "D.count()") == len(newer['brands']), f'{m}: brand list intact')
     # 3) 저장본 지움 → 번들로 돌아감
-    pg.evaluate("localStorage.removeItem('frkr.data.remote')"); mode['v'] = 'offline'; pg.reload(); pg.wait_for_timeout(2500)
+    pg.evaluate("localStorage.removeItem('frkr.data.remote');new Promise((ok,fail)=>{const r=indexedDB.open('frkr-catalog',1);r.onsuccess=()=>{const tx=r.result.transaction('catalog','readwrite');tx.objectStore('catalog').delete('remote');tx.oncomplete=ok;tx.onerror=()=>fail(tx.error)};r.onerror=()=>fail(r.error)})"); mode['v'] = 'offline'; pg.reload(); pg.wait_for_timeout(2500)
     check(dm(pg, "D.meta().version") == BV, 'without stored data: bundled data in use (offline-safe)')
     t = settings_text(pg); check('weekly' in t.lower() or 'once a week' in t.lower() or 'สัปดาห์' in t or '일주일' in t or '매주' in t, 'settings explains weekly online refresh'); pg.screenshot(path=f'{OUT}/{LANG}-settings-bundled.png')
     b.close()

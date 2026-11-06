@@ -30,9 +30,9 @@ The bundled catalog uses **all 11,166 valid 2025 official KFTC brand-list record
 
 Collector: `scraper/api-catalog.mjs` / `enrich-api.mjs`, site equivalent under `tools/scraper/`, read a user-supplied `DATA_GO_KR_SERVICE_KEY` from environment/Actions secret. Both APIs are fetched once per weekly run, using identifying UA, 1.6s+ jitter delay, paging-completeness checks, and immediate allowlisted field sanitization. No key or representative/business/corporate registration identifiers enter the cache or commits. If no key is available locally the prior good dataset remains; the scheduled workflow requires the secret and fails safe.
 
-The app checks `meta.json` at 4s after start and at resume (max once per 24h), downloads only a higher version, and applies validated data next start. Larger catalogs can exceed WebView localStorage quota: failure leaves the current bundled copy in place. Weekly site data: Monday 10:00 Bangkok, `force` manual run, Node checks before push, heartbeat `checkedAt` if unchanged. 0.1.1 bundles the exact expanded data for reliable offline use.
+The app checks `meta.json` at 4s after start and at resume (max once per 24h), downloads only a higher version, and applies validated data next start. Approved full catalogs use IndexedDB, avoiding small localStorage UTF-16 quotas; a failed/suspect update keeps the current bundled copy in place. Weekly site data: Monday 10:00 Bangkok, `force` manual run, Node checks before push, heartbeat `checkedAt` if unchanged. 0.1.1 bundles the exact expanded data for reliable offline use.
 
 ## Known verification boundaries
-- 38 Node tests passed. Headless Korean browser flows and UI screenshots were inspected; these use mocked authentication and are not a native installation or a real Google login.
+- 39 Node tests passed. Headless Korean browser flows and UI screenshots were inspected; these use mocked authentication and are not a native installation or a real Google login.
 - This box lacks usable KVM, so the Play Android emulator cannot start. Native installation, native Google sign-in and native screenshots remain outstanding on a physical/authorized test device.
 - No Play listing, tester signup or app release was made. Korea only.

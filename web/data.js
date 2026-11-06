@@ -15,10 +15,10 @@ function index(d, from) { DATA = d; FROM = from; BY = new Map(d.brands.map((b) =
 export async function load(fetchFn = globalThis.fetch && globalThis.fetch.bind(globalThis)) {
   let bundled = null;
   try { const r = await fetchFn('data/brands.json'); if (r.ok) bundled = await r.json(); } catch {}
-  let remote = null; try { remote = JSON.parse(localStorage.getItem(REMOTE_KEY) || 'null'); } catch {}
+  let remote = await storedRemote();
   const useRemote = remote && remote.meta && Array.isArray(remote.brands) && remote.brands.length && (!bundled || (remote.meta.version || 0) > (bundled.meta.version || 0));
   if (useRemote) index(remote, 'remote'); else if (bundled && Array.isArray(bundled.brands)) index(bundled, 'bundled');
-  if (!useRemote && remote) { try { localStorage.removeItem(REMOTE_KEY); } catch {} } // 번들이 더 새 것이면 오래된 원격 사본은 버림
+  if (!useRemote && remote) await deleteRemote(); // 번들이 더 새 것이면 오래된 원격 사본은 버림
   return DATA;
 }
 export const source = () => FROM;
@@ -35,7 +35,7 @@ export async function refreshRemote(fetchFn = globalThis.fetch && globalThis.fet
   const url = CONFIG.dataUrl; if (!url || !/^https:\/\//.test(url) || !fetchFn) return 'off';
   if (!force && now - lastChecked() < CHECK_EVERY_MS && now >= lastChecked()) return 'throttled';
   const done = (r) => { try { localStorage.setItem(CHECK_KEY, String(now)); } catch {} return r; };
-  let sv = 0; try { sv = (JSON.parse(localStorage.getItem(REMOTE_KEY) || 'null') || { meta: {} }).meta.version || 0; } catch {}
+  let sv = (await storedRemote())?.meta?.version || 0;
   const cv = Math.max(DATA.meta.version || 0, sv); // 이미 받아 둔(다음 실행에 적용될) 버전도 포함
   const m = await getJson(fetchFn, metaUrlOf(url), 15000); // 작은 meta.json 먼저: 새 버전이 아니면 큰 파일은 받지 않음
   if (m.json && Number.isInteger(m.json.version) && m.json.version <= cv) return done('current');
@@ -44,7 +44,7 @@ export async function refreshRemote(fetchFn = globalThis.fetch && globalThis.fet
   if (r.status === 0) return 'offline';
   if (!r.json) return done('rejected:http');
   const v = validateData(r.json, { ...DATA, meta: { ...DATA.meta, version: cv } }); if (!v.ok) return done('rejected:' + v.reason);
-  try { localStorage.setItem(REMOTE_KEY, JSON.stringify(r.json)); } catch { return done('rejected:storage'); }
+  if (!await saveRemote(r.json)) return done('rejected:storage');
   return done('updated');
 }
 export const meta = () => DATA.meta;
@@ -52,6 +52,17 @@ export const all = () => DATA.brands;
 export const byId = (id) => BY.get(id) || null;
 export const count = () => DATA.brands.length;
 export const groupCounts = () => { const c = {}; for (const b of DATA.brands) c[b.group] = (c[b.group] || 0) + 1; return c; };
+
+// ---- 대형 원격 카탈로그 영속 저장 ----
+// 11k개 데이터를 localStorage의 작은 UTF-16 quota에 넣지 않는다. IndexedDB는 앱 소유 저장소이며
+// 키/계정은 보관하지 않는다. Node(단위 검사)와 IndexedDB 미지원 환경에서는 기존 폐기 안전 경로를 유지한다.
+function remoteDb() {
+ return new Promise((resolve,reject)=>{if(!globalThis.indexedDB)return reject(new Error('idb-unavailable'));const r=indexedDB.open('frkr-catalog',1);r.onupgradeneeded=()=>r.result.createObjectStore('catalog');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error||new Error('idb-open-failed'));});
+}
+async function storedRemote(){try{const db=await remoteDb();const value=await new Promise((resolve,reject)=>{const tx=db.transaction('catalog','readonly'),r=tx.objectStore('catalog').get('remote');r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error);tx.oncomplete=()=>db.close();tx.onerror=()=>{db.close();reject(tx.error)};} );if(value)return value;}catch{}try{return JSON.parse(localStorage.getItem(REMOTE_KEY)||'null')}catch{return null;}}
+async function saveRemote(value){ /* true on success; never repair malformed newer/older data after this gate. */ let db;try{db=await remoteDb();await new Promise((resolve,reject)=>{const tx=db.transaction('catalog','readwrite');tx.objectStore('catalog').put(value,'remote');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error('idb-write-failed'));tx.onabort=()=>reject(tx.error||new Error('idb-write-aborted'));});try{localStorage.removeItem(REMOTE_KEY)}catch{}return true;}catch{if(db)try{db.close()}catch{} }
+ try{localStorage.setItem(REMOTE_KEY,JSON.stringify(value));return true}catch{return false;}}
+async function deleteRemote(){try{localStorage.removeItem(REMOTE_KEY)}catch{}try{const db=await remoteDb();await new Promise((resolve,reject)=>{const tx=db.transaction('catalog','readwrite');tx.objectStore('catalog').delete('remote');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});}catch{} }
 
 // ---- 이름·분류 ----
 export function nameOf(b, lang = getLang()) {

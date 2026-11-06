@@ -33,3 +33,7 @@ site-tools/
 .tmp*
 build-local.sh
 keystore.properties
+
+# Local browser test dependencies/results, not release inputs.
+.test-tools/
+test-results/

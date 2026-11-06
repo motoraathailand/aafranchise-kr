@@ -66,6 +66,7 @@ test('refreshRemote: full storage -> rejected:storage, no throw', async () => {
   await reset(); const j = next(); const orig = globalThis.localStorage.setItem; globalThis.localStorage.setItem = (k, v) => { if (k === 'frkr.data.remote') throw new Error('quota'); orig(k, v); };
   try { assert.equal(await D.refreshRemote(mkFetch({ [P + 'brands.json']: resp(j) })), 'rejected:storage'); } finally { globalThis.localStorage.setItem = orig; }
 });
+test('large catalogs use IndexedDB before legacy localStorage, keep next-launch semantics',()=>{const s=rd('web/data.js');assert.match(s,/indexedDB\.open/);assert.match(s,/function storedRemote/);assert.match(s,/saveRemote/);assert.match(s,/rejected:storage/);});
 test('app wiring: refreshRemote runs after boot (non-blocking, caught) and on resume; settings shows version/date/online-refresh status', () => {
   const app = rd('web/app.js'); assert.match(app, /await D\.load\(\);\s*\n\s*setTimeout\(\(\) => \{ D\.refreshRemote\(\)\.catch/); assert.match(app, /visibilitychange[^\n]*D\.refreshRemote\(\)\.catch/);
   const st = rd('web/screens-settings.js'); for (const k of ['dataVersion', 'dataAsOf', 'dataChecked', 'dataWeekly', 'dataRemoteOn', 'D.lastChecked()', 'D.source()']) assert.ok(st.includes(k), k);

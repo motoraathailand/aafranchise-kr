@@ -5,7 +5,7 @@
 Site and weekly data: [aafranchise-kr-site](https://github.com/motoraathailand/aafranchise-kr-site).
 
 ## Features
-11,166 KFTC 2025 brands and 10,621 precisely matched startup-cost records; search, favorites, comparison, KRW budget filtering (only if verified costs exist), five UI languages with Korean default, coaching tutorial with skip/replay, notices, update/changelog prompts, feedback and app information. On-device key storage: Gemini key required for AI, Groq/OpenRouter optional. All AI keys stay on the device and go only to the selected provider.
+11,166 KFTC 2025 brands; 10,621 precisely matched startup-cost records; search, favorites, comparison, KRW budget filtering (only if verified costs exist), five UI languages with Korean default, coaching tutorial with skip/replay, notices, update/changelog prompts, feedback and app information. On-device key storage: Gemini key required for AI, Groq/OpenRouter optional. All AI keys stay on the device and go only to the selected provider.
 
 ## Build / checks
 ```
@@ -26,13 +26,13 @@ Dedicated RSA keystore: `/home/box/secrets/aafranchise-kr/aafranchise-kr.keystor
 ## Data integrity and updates
 The bundled catalog uses **all 11,166 valid 2025 official KFTC brand-list records** (API 15125467), with franchise fees, education fees, deposits, other startup costs and component-total amounts for **10,621 records** where brand company, sector and industry category match in amount API 15110265. Both official Swagger tables were verified. Amounts are **thousand KRW in the source and converted to KRW won**. `smtnAmt` is the API's startup-amount components total, not a separately established interior fee; full real-world opening budgets are never inferred. No store count, mean sales, royalty or payback is supplied by the approved brand list.
 
- `brandMnno` is the official brand management number. `registrationNo` in the schema holds the non-personal `jnghdqrtrsMnno` headquarters-management identifier, **not a disclosure registration number**. `firstRegistrationAt` is labeled **franchise-business start**, not disclosure registration date. Repeated identical information rows for separate headquarters are distinct brands. The FTDA interior API is unavailable and not queried. Conflicting official duplicate amount records are rejected and stop publication.
+ `brandMnno` is the official brand management number. `registrationNo` in the schema holds the non-personal `jnghdqrtrsMnno` headquarters-management identifier, **not a disclosure registration number**. `firstRegistrationAt` is labeled **franchise-business start**, not disclosure registration date. Repeated identical information rows for separate headquarters are distinct brands. The FTDA interior API is unavailable and not queried. Exactly matching category conflicts are conservatively left without costs, retaining the brand itself; no amount is guessed.
 
 Collector: `scraper/api-catalog.mjs` / `enrich-api.mjs`, site equivalent under `tools/scraper/`, read a user-supplied `DATA_GO_KR_SERVICE_KEY` from environment/Actions secret. Both APIs are fetched once per weekly run, using identifying UA, 1.6s+ jitter delay, paging-completeness checks, and immediate allowlisted field sanitization. No key or representative/business/corporate registration identifiers enter the cache or commits. If no key is available locally the prior good dataset remains; the scheduled workflow requires the secret and fails safe.
 
-The app checks `meta.json` at 4s after start and at resume (max once per 24h), downloads only a higher version, and applies validated data next start. Larger catalogs can exceed WebView localStorage quota: failure leaves the current bundled copy in place. Weekly site data: Monday 10:00 Bangkok, `force` manual run, Node checks before push, heartbeat `checkedAt` if unchanged. 0.1.1 bundles the exact expanded data for reliable offline use.
+The app checks `meta.json` at 4s after start and at resume (max once per 24h), downloads only a higher version, and applies validated data next start. Approved full catalogs use IndexedDB, avoiding small localStorage UTF-16 quotas; a failed/suspect update keeps the current bundled copy in place. Weekly site data: Monday 10:00 Bangkok, `force` manual run, Node checks before push, heartbeat `checkedAt` if unchanged. 0.1.1 bundles the exact expanded data for reliable offline use.
 
 ## Known verification boundaries
-- 38 Node tests passed. Headless Korean browser flows and UI screenshots were inspected; these use mocked authentication and are not a native installation or a real Google login.
+- 39 Node tests passed. Headless Korean browser flows and UI screenshots were inspected; these use mocked authentication and are not a native installation or a real Google login.
 - This box lacks usable KVM, so the Play Android emulator cannot start. Native installation, native Google sign-in and native screenshots remain outstanding on a physical/authorized test device.
 - No Play listing, tester signup or app release was made. Korea only.
