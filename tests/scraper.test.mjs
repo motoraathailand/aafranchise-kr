@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
-import {parseBrandList, krwFromThousand, groupFor} from '../scraper/lib.mjs';
+import {makeBrand as SmakeBrand, parseBrandList, krwFromThousand, groupFor} from '../scraper/lib.mjs';
 const rows=parseBrandList(fs.readFileSync('data/brand-list-300-full.html','utf8'));
 test('official KFTC rows retain identifiers/category/company/registration, not private representative names',()=>{assert.ok(rows.length>=300);assert.equal(rows[4].nameKo,'메가엠지씨커피(MEGA MGC COFFEE)');assert.equal(rows[4].registrationNo,'20160628');assert.equal(rows[4].categoryKo,'커피');assert.equal(rows[4].firstRegisteredAt,'2016-07-13');});
 test('money conversion contracts — thousand KRW to KRW exactly',()=>{assert.equal(krwFromThousand('1,250'),1250000);assert.equal(krwFromThousand('text'),null);});
