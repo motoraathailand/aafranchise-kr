@@ -38,7 +38,7 @@ export async function politeFetch(url, { cache = 'data/cache', minDelayMs = 1600
 export function groupFor(category) {
   if (/커피|음료/.test(category)) return 'beverage';
   if (/교육/.test(category)) return 'education';
-  if (/편의점|의류|화장품|식품|도소매/.test(category)) return 'store';
+  if (/편의점|의류|화장품|식품|도소매|소매/.test(category)) return 'store';
   if (/이미용/.test(category)) return 'beauty';
   if (/한식|중식|일식|서양식|패스트푸드|치킨|피자|제과|아이스크림|주점|외식|분식/.test(category)) return 'food';
   if (/서비스|세탁|PC방|스포츠|숙박|자동차|안경|부동산|임대|이사|운송|오락|반려동물/.test(category)) return 'service';

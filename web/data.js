@@ -56,9 +56,9 @@ export const groupCounts = () => { const c = {}; for (const b of DATA.brands) c[
 // ---- 이름·분류 ----
 export function nameOf(b, lang = getLang()) {
   const th = b.name.ko || b.name.en || b.id, en = b.name.en || b.name.ko || b.id;
-  return ['ko','th'].includes(lang) ? th : en; // ko/zh/hi 는 영문 브랜드명(원문에 한국어·중국어 이름 없음)
+  return lang === 'ko' ? th : en; // 한국어와 공식 원문 병기 영문만 사용. 임의 기계번역 브랜드명 없음.
 }
-export function altName(b, lang = getLang()) { const a = nameOf(b, lang), th = b.name.ko, en = b.name.en; const o = ['ko','th'].includes(lang) ? en : th; return o && o !== a ? o : ''; }
+export function altName(b, lang = getLang()) { const a = nameOf(b, lang), th = b.name.ko, en = b.name.en; const o = lang === 'ko' ? en : th; return o && o !== a ? o : ''; }
 // 소분류(원문 태국어). 번역 표(SUBCATS)에 있으면 그 언어로, 없으면 태국어 원문.
 export const SUBCATS = {}; // 필요 시 scraper 가 만든 data.categories 로 채움
 export function subLabel(b, lang = getLang()) { const th = b.category && b.category.ko; if (!th) return ''; if (lang === 'ko') return th; const m = (DATA.categories || {})[th]; return (m && m[lang]) || th; }

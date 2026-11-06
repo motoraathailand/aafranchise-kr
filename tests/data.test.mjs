@@ -26,7 +26,7 @@ test('validateData rejects bad shape / schema / old version / big drop / dup ids
   assert.equal(bad(null).reason, 'shape'); assert.equal(bad({ meta: {}, brands: 'x' }).reason, 'shape');
   assert.equal(bad(next({ schema: 2 })).reason, 'schema'); assert.equal(bad(clone(bundled)).reason, 'not-newer'); assert.equal(bad(next({ version: 'x' })).reason, 'not-newer');
   const drop = next(); drop.brands = drop.brands.slice(0, Math.floor(cur.brands.length * 0.8)); drop.meta.count = drop.brands.length; assert.equal(bad(drop).reason, 'count');
-  const ok90 = next(); ok90.brands = ok90.brands.slice(0, Math.floor(cur.brands.length * 0.9)); ok90.meta.count = ok90.brands.length; assert.equal(bad(ok90).ok, true);
+  const ok90 = next(); ok90.brands = ok90.brands.slice(0, Math.floor(cur.brands.length * 0.86)); ok90.meta.count = ok90.brands.length; assert.equal(bad(ok90).ok, true);
   const mc = next({ count: 5 }); assert.equal(bad(mc).reason, 'meta-count');
   const dup = next(); dup.brands[1] = dup.brands[0]; assert.equal(bad(dup).reason, 'brand');
   const noname = next(); noname.brands[2] = { ...noname.brands[2], name: {} }; assert.equal(bad(noname).reason, 'brand');

@@ -1,8 +1,8 @@
 {
   "name": "aa-franchise-kr",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
-  "description": "AA 프랜차이즈 - 쉽게하는창업 — Korea franchise guide. Android (Capacitor 7) bundled UI. BYOK AI, offline-first data. No operator server.",
+  "description": "AA \ud504\ub79c\ucc28\uc774\uc988 - \uc27d\uac8c\ud558\ub294\ucc3d\uc5c5 \u2014 Korea franchise guide. Android (Capacitor 7) bundled UI. BYOK AI, offline-first data. No operator server.",
   "scripts": {
     "brand": "node scripts/apply-brand.mjs",
     "test": "node --test tests/*.test.mjs",

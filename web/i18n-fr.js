@@ -1,5 +1,14 @@
 // AA 프랜차이즈 KR 전용 문자열. 순서 [en, th, ko, zh, hi].
 export const FR = {
+  "disclosureCoverage": ["Only the KFTC startup-amount components total is shown. Interior details and unconfirmed real-world project costs are omitted.", "ยอดรวมนี้คือผลรวมองค์ประกอบค่าเริ่มต้นจาก KFTC เท่านั้น ไม่รวมรายละเอียดการตกแต่งและค่าใช้งานจริงที่ยังไม่ยืนยัน", "합계는 공정위 창업금액 구성 항목의 합계예요. 별도 인테리어 상세와 확인되지 않은 실제 창업 비용은 더하지 않았어요.", "合计仅指韩国公平交易委员会创业金额各项之和，不含未核实的装修明细或实际开店成本。", "कुल राशि KFTC स्टार्ट-अप मदों का योग है। अपुष्ट इंटीरियर विवरण एवं वास्तविक लागत नहीं जोड़ी गई।"],
+  "educationFee": ["Education fee", "ค่าฝึกอบรม", "교육비", "培训费", "शिक्षा शुल्क"],
+  "otherStartupCost": ["Other startup costs", "ค่าใช้จ่ายเริ่มต้นอื่น ๆ", "기타 창업비용", "其他创业费用", "अन्य स्टार्ट-अप लागत"],
+  "brandMnno": ["Brand management number", "หมายเลขจัดการแบรนด์", "브랜드 관리번호", "品牌管理编号", "ब्रांड प्रबंधन संख्या"],
+  "managementNo": ["Franchise headquarters ID", "รหัสสำนักงานใหญ่แฟรนไชส์", "가맹본부 관리번호", "加盟总部管理编号", "फ्रेंचाइज मुख्यालय संख्या"],
+  "franchiseStarted": ["Franchise business start", "วันเริ่มธุรกิจแฟรนไชส์", "가맹사업 개시일", "加盟业务开始日", "फ्रेंचाइज शुरू होने की तिथि"],
+  "products": ["Main products / services", "สินค้าและบริการหลัก", "주요 상품·서비스", "主要产品/服务", "मुख्य उत्पाद / सेवाएँ"],
+  "amountYear": ["Amount reference year", "ปีอ้างอิงจำนวนเงิน", "금액 기준연도", "金额基准年份", "राशि संदर्भ वर्ष"],
+  "sector": ["Business sector", "กลุ่มธุรกิจ", "업종 대분류", "行业大类", "व्यवसाय क्षेत्र"],
   "tagline": [
     "เปิดร้านง่าย · Easy Korean franchise",
     "쉽게하는창업",

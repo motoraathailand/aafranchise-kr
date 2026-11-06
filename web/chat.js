@@ -75,10 +75,10 @@ const pct = (f) => (!f ? null : f.none ? 'none' : f.pct != null ? `${f.pct}${f.p
 export function brandRow(b) {
   const parts = [`[${b.id}] ${b.name.en || b.name.ko}${b.name.ko && b.name.en ? ' / ' + b.name.ko : ''}`, `group=${b.group}`, b.category && b.category.ko ? `type=${b.category.ko}` : null];
   const f = (k, v) => (v == null || v === '' ? null : `${k}=${v}`);
-  parts.push(f('franchise_fee_KRW', money(b.franchiseFee)), f('total_investment_KRW', money(b.totalInvestment)), f('working_capital_KRW', b.workingCapital && b.workingCapital.min != null ? money(b.workingCapital) + (b.workingCapital.per ? '/' + b.workingCapital.per : '') : null),
+  parts.push(f('franchise_fee_KRW', money(b.franchiseFee)), f('education_fee_KRW', money(b.educationFee)), f('other_startup_cost_KRW', money(b.otherStartupCost)), f('total_investment_KRW', money(b.totalInvestment)), f('working_capital_KRW', b.workingCapital && b.workingCapital.min != null ? money(b.workingCapital) + (b.workingCapital.per ? '/' + b.workingCapital.per : '') : null),
     f('royalty', pct(b.royalty)), f('marketing_fee', pct(b.marketingFee)), f('deposit_KRW', money(b.deposit)), f('contract_years', b.contract && b.contract.years ? (b.contract.years.min === b.contract.years.max ? b.contract.years.min : `${b.contract.years.min}-${b.contract.years.max}`) : (b.contract ? b.contract.raw : null)),
     f('payback_months', b.payback && b.payback.months ? (b.payback.months.min === b.payback.months.max ? b.payback.months.min : `${b.payback.months.min}-${b.payback.months.max}`) : (b.payback ? b.payback.raw : null)),
-    f('branches', b.branches), f('first_registration', b.franchiseSinceYear), f('as_of', b.sources && b.sources[0] && b.sources[0].asof));
+    f('branches', b.branches), f('franchise_business_start', b.firstRegistrationAt), f('as_of', b.sources && b.sources[0] && b.sources[0].asof));
   return parts.filter(Boolean).join(' | ');
 }
 const clip = (s, n) => String(s || '').replace(/\s+/g, ' ').slice(0, n);

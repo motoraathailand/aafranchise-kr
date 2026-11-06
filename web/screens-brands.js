@@ -135,8 +135,8 @@ export function detail(ctx, p) {
           <div class="itags"><span class="tag g-${esc(b.group)}">${esc(groupLabel(b.group))}</span>${D.subLabel(b, L) ? `<span class="tag soft">${esc(D.subLabel(b, L))}</span>` : ''}${b.firstRegistrationAt ? `<span class="tag soft">${esc(t('registeredY', { y: b.firstRegistrationAt }))}</span>` : ''}</div></div></section>
         <div class="kpis">${kpi(t('invest'), inv, 'wallet', 0)}${kpi(t('feeLabel'), D.bahtRange(b.franchiseFee, L) || (b.franchiseFee && b.franchiseFee.raw), 'coins', 1)}${kpi(t('royalty'), D.royaltyText(b.royalty, L), 'percent', 2)}${kpi(t('payback'), D.monthsText(b.payback, L), 'trend', 3)}</div>
         <div class="dacts m-rise">${btn({ icon: 'compare', label: t(cmp ? 'inCompare' : 'addCompare'), cls: 'soft', act: 'cmp', data: `data-id="${esc(b.id)}"`, attrs: `aria-pressed="${cmp}"` })}${src ? btn({ icon: 'external', label: t('sourcePage'), cls: 'plain', act: 'src' }) : ''}</div>
-        ${sec(t('costsTerms'), `${row(t('feeLabel'), D.bahtRange(b.franchiseFee, L) || (b.franchiseFee && b.franchiseFee.raw))}${row(t('invest'), inv)}${row(t('workingCap'), b.workingCapital ? (D.bahtRange(b.workingCapital, L) ? D.bahtRange(b.workingCapital, L) + (b.workingCapital.per === 'month' ? ' ' + t('perMonth') : '') : b.workingCapital.raw) : null)}${row(t('deposit'), D.bahtRange(b.deposit, L) || (b.deposit && b.deposit.raw))}${row(t('royalty'), D.royaltyText(b.royalty, L))}${row(t('marketing'), D.royaltyText(b.marketingFee, L))}${row(t('contract'), D.yearsText(b.contract, L))}${row(t('payback'), D.monthsText(b.payback, L))}<p class="srcnote">${icon('clock')}<span>${esc(asofLine(b))}</span></p>`)}
-        ${sec(t('about'), `${b.description ? `<p class="aboutp">${esc(b.description)}</p>` : ''}${b.products ? `<p class="muted">${esc(b.products)}</p>` : ''}${row(t('branches'), b.branches != null ? t('branchesN', { n: b.branches.toLocaleString('en-US') }) : null)}${row(t('registrationNo'), b.registrationNo)}${row(t('firstRegistration'), b.firstRegistrationAt)}`)}
+        ${sec(t('costsTerms'), `${row(t('feeLabel'), D.bahtRange(b.franchiseFee, L) || (b.franchiseFee && b.franchiseFee.raw))}${row(t('educationFee'), D.bahtRange(b.educationFee, L))}${row(t('otherStartupCost'), D.bahtRange(b.otherStartupCost, L))}${row(t('amountYear'), b.amountAsOf)}${row(t('invest'), inv)}${row(t('workingCap'), b.workingCapital ? (D.bahtRange(b.workingCapital, L) ? D.bahtRange(b.workingCapital, L) + (b.workingCapital.per === 'month' ? ' ' + t('perMonth') : '') : b.workingCapital.raw) : null)}${row(t('deposit'), D.bahtRange(b.deposit, L) || (b.deposit && b.deposit.raw))}${row(t('royalty'), D.royaltyText(b.royalty, L))}${row(t('marketing'), D.royaltyText(b.marketingFee, L))}${row(t('contract'), D.yearsText(b.contract, L))}${row(t('payback'), D.monthsText(b.payback, L))}<p class="srcnote">${icon('clock')}<span>${esc(asofLine(b))}</span></p>`)}
+        ${sec(t('about'), `${b.description ? `<p class="aboutp">${esc(b.description)}</p>` : ''}${b.products ? `<p class="muted">${esc(b.products)}</p>` : ''}${row(t('branches'), b.branches != null ? t('branchesN', { n: b.branches.toLocaleString('en-US') }) : null)}${row(t('managementNo'), b.registrationNo)}${row(t('brandMnno'), b.brandMnno)}${row(t('sector'), b.category && b.category.sector)}${row(t('products'), b.category && b.category.product)}${row(t('franchiseStarted'), b.firstRegistrationAt)}`)}
         ${sec(t('support'), ul(b.support))}${sec(t('requirements'), ul(b.requirements))}${sec(t('highlights'), ul(b.highlights))}
         ${sec(t('contactTitle'), `${contact}<p class="srcnote">${icon('info')}<span>${esc(t('contactNote'))}</span></p>`)}
         <p class="small muted dis">${icon('warn')}<span>${esc(t('detailDisclaimer'))}</span></p><p class="small muted dis">${icon('info')}<span>${esc(t('disclosureCoverage'))}</span></p>
@@ -175,7 +175,7 @@ export function compare(ctx) {
     ['con', t('contract'), (b) => D.yearsText(b.contract, L), null],
     ['pay', t('payback'), (b) => D.monthsText(b.payback, L), (b) => b.payback && b.payback.months && b.payback.months.min, 'low'],
     ['br', t('branches'), (b) => (b.branches != null ? b.branches.toLocaleString('en-US') : null), null],
-    ['since', t('franchiseSince'), (b) => b.franchiseSinceYear, null],
+    ['since', t('franchiseSince'), (b) => b.firstRegistrationAt, null],
   ];
   const cell = (b, f, best, key) => { const v = f(b); const num = key; return `<div class="cc ${best != null && num != null && num === best ? 'best' : ''}">${v == null || v === '' ? na() : esc(v)}</div>`; };
   const body = rows.map(([k, label, f, num, dir], i) => { const best = num && dir === 'low' ? min(num) : null; return `<div class="crow m-stagger" style="--i:${i}"><div class="clabel">${esc(label)}</div><div class="cvals" style="--n:${n}">${bs.map((b) => cell(b, f, best, num ? num(b) : null)).join('')}</div></div>`; }).join('');
@@ -194,8 +194,8 @@ export function compare(ctx) {
 }
 
 // ---------- 예산 찾기 ----------
-const SL_MIN = Math.log(10000), SL_MAX = Math.log(20000000);
-const toSlider = (v) => Math.round(((Math.log(Math.max(10000, Math.min(20000000, v))) - SL_MIN) / (SL_MAX - SL_MIN)) * 1000);
+const SL_MIN = Math.log(10000), SL_MAX = Math.log(500000000);
+const toSlider = (v) => Math.round(((Math.log(Math.max(10000, Math.min(500000000, v))) - SL_MIN) / (SL_MAX - SL_MIN)) * 1000);
 const fromSlider = (s) => { const raw = Math.exp(SL_MIN + (s / 1000) * (SL_MAX - SL_MIN)); const step = raw < 100000 ? 5000 : raw < 1e6 ? 10000 : raw < 5e6 ? 50000 : 100000; return Math.round(raw / step) * step; };
 export function budget(ctx, p) {
   const L = getLang(); const st = S.state(); p.v ??= st.budget; p.reserve ??= st.reserve; p.shown ??= 20;

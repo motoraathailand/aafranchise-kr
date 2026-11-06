@@ -1,1 +1,9 @@
-{"version":20261106,"count":300,"generatedAt":"2026-11-06T13:48:53.333Z","asOfMax":"2026-11-06","feeCoverageRequired":false}
+{
+ "version": 2026110602,
+ "count": 11166,
+ "generatedAt": "2026-11-06T14:54:44.441Z",
+ "asofMax": "2026-11-06",
+ "feeCoverageRequired": true,
+ "bytes": 17539099,
+ "sha256": "da9c20ae3397ba5091e588bbae18d1f9f55051eda96e8865a1c2c8e04ee1ae8f"
+}
