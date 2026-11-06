@@ -16,10 +16,10 @@ test('AI keys stay on device: auth.js and data.js never touch secure keys; no ke
   assert.ok(!/secure|apiKey|getKey/.test(rd('web/auth.js')));
   assert.ok(!/localStorage\.setItem\('fr\.key|secure\./.test(rd('web/data.js')));
 });
-test('Firebase auth plugin + google-services wired in the Android build; version 0.1.1 / 2', () => {
-  const pkg = JSON.parse(rd('package.json')); assert.ok(pkg.dependencies['@capacitor-firebase/authentication']); assert.equal(pkg.version, '0.1.1');
+test('Firebase auth plugin + google-services wired in the Android build; version 0.1.2 / 3', () => {
+  const pkg = JSON.parse(rd('package.json')); assert.ok(pkg.dependencies['@capacitor-firebase/authentication']); assert.equal(pkg.version, '0.1.2');
   assert.match(rd('android/build.gradle'), /com\.google\.gms:google-services/); assert.match(rd('android/app/build.gradle'), /com\.google\.gms\.google-services/);
   assert.match(rd('android/app/capacitor.build.gradle'), /capacitor-firebase-authentication/); assert.match(rd('capacitor.config.json'), /FirebaseAuthentication/);
-  assert.match(rd('android/app/build.gradle'), /versionCode 2\s/); assert.match(rd('android/app/build.gradle'), /versionName "0\.1\.1"/);
+  assert.match(rd('android/app/build.gradle'), /versionCode 3\s/); assert.match(rd('android/app/build.gradle'), /versionName "0\.1\.2"/);
 });
 test('remote data refresh kept', () => { assert.match(CONFIG.dataUrl, /brands\.json$/); assert.match(CONFIG.dataMetaUrl, /meta\.json$/); assert.match(rd('web/app.js'), /refreshRemote/); });

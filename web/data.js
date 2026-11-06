@@ -3,6 +3,7 @@
 import { CONFIG } from './config.js';
 import { getLang, pickL } from './i18n.js';
 import { GROUPS, MAX_DROP, validateData } from './data-validate.js';
+import { decodeCatalog } from './text-entities.js';
 
 const REMOTE_KEY = 'frkr.data.remote'; const CHECK_KEY = 'frkr.data.checked'; // 기기에 저장한 원격 데이터 · 마지막 확인 시각(ms)
 export const CHECK_EVERY_MS = 24 * 3600 * 1000; // 원격 확인은 하루 한 번까지
@@ -11,16 +12,24 @@ let FROM = 'none'; // 'bundled' | 'remote' — 지금 쓰는 데이터 출처
 let BY = new Map();
 export { GROUPS, MAX_DROP, validateData };
 
-function index(d, from) { DATA = d; FROM = from; BY = new Map(d.brands.map((b) => [b.id, b])); }
+function index(d, from) { DATA = decodeCatalog(d); FROM = from; BY = new Map(DATA.brands.map((b) => [b.id, b])); }
+
 export async function load(fetchFn = globalThis.fetch && globalThis.fetch.bind(globalThis)) {
-  let bundled = null;
-  try { const r = await fetchFn('data/brands.json'); if (r.ok) bundled = await r.json(); } catch {}
-  let remote = await storedRemote();
-  const useRemote = remote && remote.meta && Array.isArray(remote.brands) && remote.brands.length && (!bundled || (remote.meta.version || 0) > (bundled.meta.version || 0));
-  if (useRemote) index(remote, 'remote'); else if (bundled && Array.isArray(bundled.brands)) index(bundled, 'bundled');
-  if (!useRemote && remote) await deleteRemote(); // 번들이 더 새 것이면 오래된 원격 사본은 버림
-  return DATA;
+ let bundled = null;
+ try { const r = await fetchFn('data/brands.json'); if (r.ok) bundled = await r.json(); } catch {}
+ let remote = await storedRemote();
+ // Decode names and every nested text field at the display boundary too. Older cache files
+ // are ignored if their effective version is not newer than the clean bundled catalogue.
+ bundled = decodeCatalog(bundled); remote = decodeCatalog(remote);
+ // One data revision can increase just the sequence (YYYYMMDDVV) after YYYYMMDD changed.
+ // Numeric versions preserve the existing validator contract; a short VV suffix sorts after YYYYMMDD.
+ const vc = (value) => { const s = String(value?.meta?.version || 0); return Number(s.length === 8 ? s + '00' : s); };
+ const useRemote = remote && remote.meta && remote.brands.length && vc(remote) > vc(bundled);
+ if (useRemote) index(remote, 'remote'); else if (bundled && Array.isArray(bundled.brands)) index(bundled, 'bundled');
+ if (!useRemote && remote) await deleteRemote();
+ return DATA;
 }
+
 export const source = () => FROM;
 export const lastChecked = () => { try { return Number(localStorage.getItem(CHECK_KEY)) || 0; } catch { return 0; } };
 const metaUrlOf = (u) => (CONFIG.dataMetaUrl || u.replace(/[^/]*$/, 'meta.json'));

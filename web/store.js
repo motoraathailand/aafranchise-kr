@@ -1,3 +1,4 @@
+import { decodeEntities } from './text-entities.js';
 // 기기 안 저장소(앱 서버 없음). 비밀(API 키)은 secure.js, 그 외(즐겨찾기·비교·최근 본 브랜드·대화·설정)는 localStorage 한 키(frkr.data.v1).
 const KEY = 'frkr.data.v1';
 const mem = new Map();
@@ -30,6 +31,8 @@ export function addRecent(id) { S.recent = [id, ...S.recent.filter((x) => x !== 
 export function setBudget(n, reserve) { if (Number.isFinite(n)) S.budget = Math.max(0, Math.round(n)); if (typeof reserve === 'boolean') S.reserve = reserve; save(); }
 
 // 대화(최근 40개, 텍스트만 — 비밀값 없음)
-export const chat = () => S.chat;
+export const chat = () => S.chat.map(m => { if (m.role !== 'bot') return m; const text = decodeEntities(m.text); return text === m.text ? m : { ...m, text }; });
 export function pushChat(m) { S.chat.push({ role: m.role, text: String(m.text || '').slice(0, 6000), at: Date.now(), ids: (m.ids || []).slice(0, 12), err: !!m.err, fb: !!m.fb }); S.chat = S.chat.slice(-40); save(); }
 export function clearChat() { S.chat = []; save(); }
+// Response-local control. Requires the exact persisted bot message index; no remote send.
+export function hideChat(i) { if (!Number.isInteger(i) || i < 0 || i >= S.chat.length || S.chat[i].role !== 'bot') return false; S.chat.splice(i, 1); save(); return true; }

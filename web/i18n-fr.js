@@ -1,5 +1,14 @@
 // AA 프랜차이즈 KR 전용 문자열. 순서 [en, th, ko, zh, hi].
 export const FR = {
+  "aiReport": ["Report", "รายงาน", "신고", "举报", "रिपोर्ट"],
+  "aiHideResponse": ["Hide response", "ซ่อนคำตอบ", "답변 숨기기", "隐藏回答", "उत्तर छिपाएँ"],
+  "aiReportTitle": ["Report AI response", "รายงานคำตอบ AI", "AI 답변 신고", "举报AI回复", "AI उत्तर की रिपोर्ट करें"],
+  "aiReportBody": ["Send this AI response by email if it is offensive or harmful. You can review it before sending. No email has been sent yet.", "ส่งคำตอบ AI นี้ทางอีเมลหากไม่เหมาะสมหรือเป็นอันตราย คุณตรวจสอบก่อนส่งได้ ยังไม่ได้ส่งอีเมล", "불쾌하거나 유해한 AI 답변은 이메일로 신고할 수 있어요. 보내기 전에 내용을 확인해 주세요. 아직 이메일은 보내지 않았어요.", "若AI回复令人反感或有害，可通过邮件举报。发送前可检查内容；目前尚未发送任何邮件。", "यदि AI का उत्तर अपमानजनक या हानिकारक है, उसे ईमेल से रिपोर्ट करें। भेजने से पहले सामग्री देख सकते हैं। अभी कोई ईमेल नहीं भेजा गया है।"],
+  "aiReportSend": ["Prepare email", "เตรียมอีเมล", "신고 이메일 열기", "准备举报邮件", "रिपोर्ट ईमेल तैयार करें"],
+  "aiReportSubject": ["AI content report", "รายงานเนื้อหา AI", "AI 답변 신고", "AI内容举报", "AI सामग्री रिपोर्ट"],
+  "aiReportEmailLabel": ["Reported AI response:", "คำตอบ AI ที่รายงาน:", "신고할 AI 답변:", "被举报的AI回复：", "रिपोर्ट किया गया AI उत्तर:"],
+  "aiHidden": ["Response hidden on this device", "ซ่อนคำตอบในเครื่องนี้แล้ว", "이 기기에서 답변을 숨겼어요", "已在此设备上隐藏回答", "उत्तर इस डिवाइस पर छिपा दिया गया"],
+
   "disclosureCoverage": ["Only the KFTC startup-amount components total is shown. Interior details and unconfirmed real-world project costs are omitted.", "ยอดรวมนี้คือผลรวมองค์ประกอบค่าเริ่มต้นจาก KFTC เท่านั้น ไม่รวมรายละเอียดการตกแต่งและค่าใช้งานจริงที่ยังไม่ยืนยัน", "합계는 공정위 창업금액 구성 항목의 합계예요. 별도 인테리어 상세와 확인되지 않은 실제 창업 비용은 더하지 않았어요.", "合计仅指韩国公平交易委员会创业金额各项之和，不含未核实的装修明细或实际开店成本。", "कुल राशि KFTC स्टार्ट-अप मदों का योग है। अपुष्ट इंटीरियर विवरण एवं वास्तविक लागत नहीं जोड़ी गई।"],
   "educationFee": ["Education fee", "ค่าฝึกอบรม", "교육비", "培训费", "शिक्षा शुल्क"],
   "otherStartupCost": ["Other startup costs", "ค่าใช้จ่ายเริ่มต้นอื่น ๆ", "기타 창업비용", "其他创业费用", "अन्य स्टार्ट-अप लागत"],
