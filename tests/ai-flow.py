@@ -22,14 +22,14 @@ with sync_playwright() as p:
     pg.add_init_script(FAKE)
     pg.add_init_script(f"localStorage.setItem('frkr.tutorial.done','1');localStorage.setItem('frkr.lang','{LANG}')")
     pg.goto(f'http://127.0.0.1:{port}/index.html'); pg.wait_for_timeout(1800)
-    first_id['v'] = pg.evaluate("fetch('data/brands.json').then(r=>r.json()).then(j=>j.brands.find(b=>b.totalInvestment&&b.totalInvestment.min<=300000).id)")
+    first_id['v'] = pg.evaluate("import('./data.js').then(async D=>{await D.load();return D.search({sort:'cost'})[0].id})")
     pg.click('[data-act=google]'); pg.wait_for_timeout(1000)
     pg.click('[data-act=age]'); pg.click('[data-act=agree]'); pg.wait_for_timeout(800)
     pg.locator('[data-act=ai]').first.click(); pg.wait_for_timeout(700)
     pg.locator('[data-act=keys]').first.click(); pg.wait_for_timeout(800)
     pg.locator('input[data-key=gemini]').fill('AIza' + 'x' * 35); pg.locator('[data-act=save]').click(); pg.wait_for_timeout(1500)
     print('after save screen:', pg.locator('.screen:not(.gone)').last.locator('.title').first.inner_text())
-    pg.locator('#ainput').fill('Which franchise can I start under 300,000 baht?'); pg.locator('[data-act=send]').click(); pg.wait_for_timeout(2500)
+    pg.locator('#ainput').fill('Which franchise can I start with the lowest verified total in KRW?'); pg.locator('[data-act=send]').click(); pg.wait_for_timeout(2500)
     pg.screenshot(path=f'{OUT}/{LANG}-20-ai-answer.png')
     chips = pg.locator('.msg.bot .chip').count(); print('chips:', chips, '| bot text:', pg.locator('.msg.bot .bubble').last.inner_text()[:140].replace('\n', ' '))
     print('provider calls:', len(bodies))
@@ -38,3 +38,5 @@ with sync_playwright() as p:
         u = json.loads(body)['contents'][-1]['parts'][0]['text']; print('USER PART:', u[:1500])
     b.close()
 print('\n'.join(logs[:20]))
+
+assert bodies and 'total_investment_KRW' in bodies[-1], 'prompt must carry verified KRW component totals'
