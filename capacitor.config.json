@@ -1,0 +1,25 @@
+{
+  "appId": "com.motoraa.franchisekr",
+  "appName": "AA 프랜차이즈 - 쉽게하는창업",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "appendUserAgent": "AAFranchise/0.1.8",
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false,
+    "adjustMarginsForEdgeToEdge": "disable"
+  },
+  "plugins": {
+    "Keyboard": {
+      "resize": "native"
+    },
+    "FirebaseAuthentication": {
+      "skipNativeAuth": false,
+      "providers": [
+        "google.com"
+      ]
+    }
+  }
+}

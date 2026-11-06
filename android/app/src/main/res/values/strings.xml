@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AA 프랜차이즈 - 쉽게하는창업</string>
+    <string name="title_activity_main">AA 프랜차이즈 - 쉽게하는창업</string>
+    <string name="package_name">com.motoraa.franchisekr</string>
+    <string name="custom_url_scheme">com.motoraa.franchisekr</string>
+</resources>

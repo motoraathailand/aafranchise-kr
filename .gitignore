@@ -1,0 +1,35 @@
+node_modules/
+www/
+dist/
+tmp/
+android/build/
+android/app/build/
+android/.gradle/
+android/local.properties
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+android/capacitor-cordova-android-plugins/
+keystore/
+*.jks
+*.keystore
+.env
+.env.*
+screenshots-tmp/
+
+android/app/google-services.json
+*.apk
+*.aab
+
+# scraper cache (raw pages; ~350 MB; re-created by npm run scrape / weekly refresh, never committed)
+data/cache/
+__pycache__/
+
+# FTC discovery and raw research pages; only generated data and reproducible parsers ship.
+data/*.html
+data/*.txt
+data/*.js
+site-tools/
+.tmp*
+build-local.sh
+keystore.properties

@@ -1,0 +1,2 @@
+// 자동 생성(scripts/make-icons.py) — 앱 로고 도형(흰색, 배경은 .brandmark). 직접 수정하지 말 것.
+export const LOGO_GLYPH = '<svg class="ic logo" viewBox="17 20 74 58" fill="currentColor" aria-hidden="true"><path d="M26.7 24.1H81.3L90.4 42.3H17.6Z"/><path d="M17.6 42.3a12.13 12.13 0 0 0 24.27 0Z"/><path d="M41.87 42.3a12.13 12.13 0 0 0 24.27 0Z"/><path d="M66.13 42.3a12.13 12.13 0 0 0 24.27 0Z"/><rect x="28.0" y="63.1" width="52.0" height="10.4" rx="5.2"/></svg>';

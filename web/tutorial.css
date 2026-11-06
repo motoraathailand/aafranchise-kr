@@ -1,0 +1,25 @@
+/* 첫 실행 튜토리얼(코치마크). 움직임은 공통 토큰(--m-*)만: 말풍선 = transform/opacity, 구멍 = SVG(rAF, tutorial.js). 동작 줄이기면 전부 즉시. */
+.coach { position: fixed; inset: 0; z-index: 90; touch-action: none; overscroll-behavior: none; animation: m-fade-in var(--m-base) var(--m-ease) backwards; }
+.coach.out { pointer-events: none; animation: m-fade-out var(--m-exit) var(--m-ease-in) forwards; }
+.coach-dim { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.coach-ring { stroke: #fff; stroke-width: 2.5; stroke-opacity: .95; }
+.coach-probe { position: absolute; left: 0; top: 0; width: 0; height: 0; visibility: hidden; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.coach-bubble { position: absolute; left: 0; top: 0; transition: transform var(--m-slow) var(--m-ease-out); }
+.coach-bubble.noanim { transition: none; }
+.coach-card { position: relative; z-index: 1; overflow-y: auto; overscroll-behavior: contain; background: var(--surface); color: var(--ink); border-radius: 22px; padding: 14px 16px 14px; box-shadow: 0 22px 60px -14px rgba(0,0,0,.5); }
+.coach-card:focus { outline: none; }
+.coach-arrow { position: absolute; z-index: 0; width: 18px; height: 18px; background: var(--surface); border-radius: 4px; transform: rotate(45deg); display: none; }
+.coach-arrow.up { display: block; top: -6px; }
+.coach-arrow.down { display: block; bottom: -6px; }
+.coach-in { transition: opacity var(--m-fast) var(--m-ease); }
+.coach-in.swap { opacity: 0; }
+.coach-head { display: flex; align-items: center; gap: 10px; }
+.coach-ic { flex: 0 0 auto; display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: var(--brand-soft); color: var(--brand-ink); }
+.coach-head h2 { flex: 1; min-width: 0; margin: 0; font-size: 17.5px; line-height: 1.35; font-weight: 700; overflow-wrap: anywhere; }
+.coach-n { flex: 0 0 auto; font-size: 12.5px; font-weight: 600; color: var(--muted); background: var(--soft); border-radius: var(--pill); padding: 2px 10px; }
+.coach-body { margin: 10px 0 12px; font-size: 15px; line-height: 1.6; color: var(--ink); overflow-wrap: anywhere; }
+html[lang=th] .coach-body, html[lang=hi] .coach-body { line-height: 1.75; }
+.coach-acts { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.coach-acts .btn { min-height: 44px; }
+@media (max-height: 460px) { .coach-card { padding: 10px 14px; } .coach-body { margin: 6px 0 8px; font-size: 14px; line-height: 1.5; } .coach-acts .btn { min-height: 40px; } }
+@media (prefers-reduced-motion: reduce) { .coach, .coach.out { animation: none !important; } .coach-bubble, .coach-in { transition: none !important; } }

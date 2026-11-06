@@ -1,0 +1,15 @@
+{
+  "_comment": "앱 이름·패키지·메인 컬러의 단일 출처(잠정). 바꾼 뒤 `npm run brand` (build-app 이 자동 실행).",
+  "nameStatus": "Korea-only 0.1.0: \"AA 프랜차이즈 - 쉽게하는창업 – 쉽게하는창업\" (Perd Ran Dee)",
+  "names": {
+    "th": "AA 프랜차이즈 - 쉽게하는창업",
+    "en": "AA 프랜차이즈 - 쉽게하는창업",
+    "ko": "AA 프랜차이즈 - 쉽게하는창업",
+    "zh": "AA 프랜차이즈 - 쉽게하는창업",
+    "hi": "AA 프랜차이즈 - 쉽게하는창업"
+  },
+  "packageId": "com.motoraa.franchisekr",
+  "packageStatus": "com.motoraa.franchisekr (nothing on Play yet; change only before first Play upload)",
+  "mainColor": "#be185d",
+  "tagline": "쉽게하는창업"
+}

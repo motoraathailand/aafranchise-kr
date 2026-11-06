@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import { makeBrand, parseBrandList } from './lib.mjs';
+const files = (process.env.FTC_FILES || 'data/cache/latest-list.html').split(',');
+const listing=fs.existsSync('data/cache/listing-meta.json')?JSON.parse(fs.readFileSync('data/cache/listing-meta.json','utf8')):{};const fetchedAt = listing.fetchedAt || new Date().toISOString(), listedAt = process.env.KFTC_LIST_DATE || listing.listedAt || new Date().toISOString().slice(0,10);
+const rows = files.flatMap((f) => parseBrandList(fs.readFileSync(f, 'utf8')));
+const unique = [...new Map(rows.map((r) => [r.registrationNo, r])).values()];
+const brands = unique.map((r) => makeBrand(r, { fetchedAt, listedAt }));
+if (brands.length < 100) throw new Error(`Too few valid official brand rows: ${brands.length}`);
+const version = Number(process.env.DATA_VERSION || listedAt.replaceAll('-', ''));
+const data = { meta: { schema: 1, version, generatedAt: fetchedAt, count: brands.length, scope: 'Korea — verified KFTC public disclosure list records; unknown fees, royalties and store counts are omitted', country: 'South Korea', currency: 'KRW', feeCoverageRequired: false, coverage: { catalogFieldsVerified: brands.length, withFranchiseFee: 0, withTotalInvestment: 0, withRoyalty: 0, withBranches: 0 }, sources: [{ id: 'kftc', name: '공정거래위원회 가맹사업정보제공시스템', url: 'https://franchise.ftc.go.kr/mnu/00013/program/userRqst/list.do', collected: 'Public disclosure list, no login, 1.6s+ randomized delay and cached responses' }], asofMax: listedAt, note: 'Fees/investments are never inferred from registration records or category totals. Exact listed dates and registration numbers are retained. Additional official fee/sales APIs can enrich rows when supplied through DATA_GO_KR_SERVICE_KEY.' }, brands };
+fs.mkdirSync('web/data', { recursive: true });
+const out=process.argv.includes('--out')?process.argv[process.argv.indexOf('--out')+1]:'web/data/brands.json';
+fs.writeFileSync(out, JSON.stringify(data));
+fs.writeFileSync('web/data/meta.json', JSON.stringify({ version, count: brands.length, generatedAt: fetchedAt, asOfMax: listedAt, feeCoverageRequired: false }) + '\n');
+console.log(`Built ${brands.length} actual KFTC brands; undisclosed money fields expelled, not guessed.`);

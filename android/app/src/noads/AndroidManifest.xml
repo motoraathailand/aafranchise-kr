@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NOADS 변형(기본·모든 테스트 빌드): 혹시 라이브러리가 광고 ID 권한·AdMob 앱 ID 를 끼워 넣어도 제거(안전망). -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
+    <application>
+        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" tools:node="remove" />
+    </application>
+</manifest>

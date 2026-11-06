@@ -1,0 +1,114 @@
+apply plugin: 'com.android.application'
+
+// AdMob 앱 ID 는 여기에 쓰지 않음: 웹 소스 web/admob-config.js 한 곳(= `npm run build:app` 이 복사한 assets/public/admob-config.js)에서 읽음 (AAAi 방식).
+// 패키지 이름(namespace/applicationId)은 com.motoraa.aafranchise — 바꿀 때는 `node scripts/set-package.mjs <새 패키지>` (brand.json·자바 패키지·이 파일을 함께 수정).
+def admobCfg = file('src/main/assets/public/admob-config.js')
+def admobAppId = { String key ->
+    def m = admobCfg.exists() ? (admobCfg.text =~ ("(?m)^\\s*" + key + ":\\s*'(ca-app-pub-\\d+~\\d+)'")) : null
+    (m != null && m.find()) ? m.group(1) : null
+}
+
+def keystoreProps = new Properties()
+def keystoreFile = rootProject.file('../keystore/keystore.properties')
+if (keystoreFile.exists()) { keystoreFile.withInputStream { keystoreProps.load(it) } }
+
+android {
+    namespace "com.motoraa.franchisekr"
+    compileSdk rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.motoraa.franchisekr"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "0.1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    // 변형 2개(AA 공통 규칙 2026-11-02: 정식 출시 전에는 광고 0). noads(기본) = 개발·내부·비공개 테스트에 쓰는 빌드로 광고 SDK·앱 ID·AD_ID 권한이 없음.
+    // ads = 정식 출시 후 공개 빌드(배너 전용). AdMob 플러그인은 scripts/post-sync.mjs 가 adsImplementation 으로만 연결.
+    flavorDimensions "advertisingFlavor"
+    productFlavors {
+        noads { dimension "advertisingFlavor" }
+        ads { dimension "advertisingFlavor"; versionNameSuffix "-ads" }
+    }
+    signingConfigs {
+        appdebug {
+            if (keystoreProps['storeFile']) {
+                storeFile rootProject.file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+        upload {
+            if (keystoreProps['storeFile']) {
+                storeFile rootProject.file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+    }
+    buildFeatures {
+        buildConfig true // BuildConfig.DEBUG 를 웹에 알려 줌(AABuild 플러그인): debug = 테스트 광고 단위만
+    }
+    buildTypes {
+        debug {
+            if (keystoreProps['storeFile']) { signingConfig signingConfigs.appdebug }
+            manifestPlaceholders = [admobAppId: admobAppId('testAppId') ?: 'NONE']
+        }
+        release {
+            manifestPlaceholders = [admobAppId: admobAppId('appId') ?: 'NONE']
+            if (keystoreProps['storeFile']) { signingConfig signingConfigs.upload }
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+// Firebase(Google 로그인): android/app/google-services.json 이 있을 때만 플러그인 적용. 없으면 빌드는 되지만 로그인은 "아직 설정 안 됨" 상태 → 웹 번들에 auth.configured=false 로 표시(build-app.mjs).
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.exists() && servicesJSON.text) { apply plugin: 'com.google.gms.google-services' }
+} catch (Exception e) { logger.info('google-services.json not found, google-services plugin not applied') }
+
+// 번들형 UI 안전장치: `npm run build:app`(웹 UI 복사 + cap sync) 없이 빌드하면 낡은/빈 UI 가 들어감 → 막는다.
+//  · 모든 빌드: assets/public 에 번들 UI 가 있어야 함
+//  · release: 실제 AdMob 앱 ID 가 테스트 ID 와 달라야 함(= AdMob 앱을 만든 뒤). 로그인 없음
+tasks.register('checkBundledUi') {
+    doLast {
+        def cfg = file('src/main/assets/public/config.js')
+        if (!file('src/main/assets/public/index.html').exists() || !cfg.exists()) throw new GradleException('번들 UI 가 없습니다. 먼저 `npm run build:app` 을 실행하세요 (웹 UI 복사 + cap sync).')
+        def hasAdBundle = file('src/main/assets/public/admob-config.js').exists()
+        def wantsAds = gradle.startParameter.taskNames.any { it.toLowerCase().contains('ads') && !it.toLowerCase().contains('noads') }
+        if (!wantsAds && hasAdBundle) throw new GradleException('noads 빌드인데 번들에 admob-config.js 가 있습니다. `node scripts/build-app.mjs noads` 로 다시 번들하세요(테스트 빌드는 광고 0).')
+        if (wantsAds && (admobAppId('testAppId') == null || admobAppId('appId') == null)) throw new GradleException('ads 변형: admob-config.js 에서 appId/testAppId 를 읽지 못했습니다 (`node scripts/build-app.mjs ads` 로 번들하세요).')
+        if (gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') || it.toLowerCase().contains('bundle') } && !file('google-services.json').exists())
+            throw new GradleException('release: android/app/google-services.json 이 없습니다(Firebase 프로젝트 필요 — Google 로그인 필수 앱). README 의 "Google 로그인 설정" 참고.')
+        if (wantsAds && gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') } && admobAppId('appId') == admobAppId('testAppId'))
+            throw new GradleException('ads release: web/admob-config.js 의 appId 가 아직 구글 테스트 ID 입니다. AdMob 에서 fr 앱을 만든 뒤 실제 ID 로 바꾸세요.')
+    }
+}
+preBuild.dependsOn 'checkBundledUi'

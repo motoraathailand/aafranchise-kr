@@ -1,0 +1,83 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#9d174d}
+body{font-family:'Kanit','Noto Color Emoji',sans-serif;font-weight:700;color:#fff}
+#stage{position:absolute;inset:0;overflow:hidden;background:linear-gradient(170deg,#4a0a28 0%,#b51958 48%,#d62368 100%)}
+.blob{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(255,170,205,.30),rgba(255,170,205,0) 70%)}
+.abs{position:absolute;left:0;width:1080px;text-align:center;will-change:transform,opacity}
+.line{display:block;line-height:1.18;text-shadow:0 6px 24px rgba(60,0,30,.4)}
+.y{color:#ffe14d}.m{color:#ffb3d1}
+.mask{overflow:hidden}
+#phone{position:absolute;left:244px;top:600px;width:592px;height:1244px;border-radius:70px;background:#17101a;padding:16px;box-shadow:0 40px 90px rgba(60,0,30,.55),inset 0 0 0 3px #3b2a35}
+#screen{position:relative;width:560px;height:1212px;border-radius:56px;overflow:hidden;background:#fff}
+.scr{position:absolute;inset:0;overflow:hidden}
+.scr img{position:absolute;left:0;top:0;width:560px;height:1212px;transform-origin:50% 0}
+#icon{position:absolute;left:390px;top:300px;width:300px;height:300px;border-radius:70px;overflow:hidden;box-shadow:0 24px 60px rgba(60,0,30,.5)}
+#icon img{width:300px;height:300px;display:block}
+.tag{display:inline-block;background:#ffe14d;color:#4a0a28;font-size:76px;line-height:1.2;padding:6px 52px 14px;border-radius:90px;box-shadow:0 18px 50px rgba(60,0,30,.4)}
+</style></head><body><div id="stage">
+<div class="blob" id="b1" style="width:900px;height:900px;left:-300px;top:200px"></div>
+<div class="blob" id="b2" style="width:700px;height:700px;left:500px;top:1000px"></div>
+<div class="blob" id="b3" style="width:500px;height:500px;left:300px;top:-100px"></div>
+<div class="abs" id="h1" style="top:520px;font-size:140px"><span class="line">อยากเปิดร้าน</span></div>
+<div class="abs" id="h2" style="top:710px;font-size:140px"><span class="line m">แต่ไม่รู้จะเลือก</span></div>
+<div class="abs" id="h3" style="top:900px;font-size:150px"><span class="line y">แฟรนไชส์ไหน?</span></div>
+<div class="abs" id="h4" style="top:1150px;font-size:72px"><span class="line">AA Franchise ช่วยคุณได้</span></div>
+<div id="caps"></div>
+<div id="phone"><div id="screen"></div></div>
+<div id="icon"><img src="icon.png"></div>
+<div class="abs" id="e1" style="top:660px;font-size:140px"><span class="line">AA Franchise</span></div>
+<div class="abs" id="e1b" style="top:860px;font-size:92px"><span class="line m">เปิดร้านดี</span></div>
+<div class="abs" id="e2" style="top:1060px"><span class="tag">ร่วมทดสอบฟรี</span></div>
+<div class="abs" id="e3" style="top:1290px;font-size:78px"><span class="line">เฉพาะประเทศไทย · 697 แบรนด์</span></div>
+<div class="abs" id="e4" style="top:1420px;font-size:84px"><span class="line y">ลิงก์ในโปรไฟล์</span></div>
+</div>
+<script>
+const SC=[
+ ['01-home','ค้นหา 697 แฟรนไชส์ไทย','ในแอปเดียว'],
+ ['02-list','กรองตามหมวดหมู่','และงบประมาณ'],
+ ['03-detail','ดูค่าแฟรนไชส์ ค่าสิทธิ์','และระยะคืนทุน'],
+ ['04-compare','เทียบแบรนด์','ข้างกัน'],
+ ['05-budget','หาแบรนด์ที่พอดีงบ','ใส่งบ ดูผลทันที'],
+ ['06-ai','ถาม AI ได้','ด้วยคีย์ของคุณเอง'],
+ ['07-guides','ขั้นตอนเริ่มต้น','ทีละขั้น'],
+];
+const T0=2.7,DT=2.55,PH_IN=2.0,PH_OUT=T0+DT*SC.length+0.1,END=PH_OUT+0.35;
+const $=id=>document.getElementById(id);
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const prog=(t,t0,d)=>cl((t-t0)/d);
+function bez(x1,y1,x2,y2){return function(x){if(x<=0)return 0;if(x>=1)return 1;let lo=0,hi=1,t=x;for(let i=0;i<30;i++){const cx=3*x1*t*(1-t)*(1-t)+3*x2*t*t*(1-t)+t*t*t;if(Math.abs(cx-x)<1e-5)break;if(cx<x)lo=t;else hi=t;t=(lo+hi)/2}return 3*y1*t*(1-t)*(1-t)+3*y2*t*t*(1-t)+t*t*t}}
+const outQ=bez(.22,1,.36,1), inC=bez(.4,0,1,1), std=bez(.4,0,.2,1);
+function set(el,o){el.style.opacity=o.a===undefined?1:o.a;el.style.transform=`translate(${o.x||0}px,${o.y||0}px) scale(${o.s===undefined?1:o.s})`}
+function maskIn(el,t,tin,tout){const sp=el.firstElementChild;const i=outQ(prog(t,tin,.5)),o=inC(prog(t,tout,.24));el.style.opacity=1-o;sp.style.transform=`translateY(${(1-i)*120-o*40}px)`;sp.style.opacity=cl(i*3)*(1-o)}
+const scr=$('screen'),caps=$('caps');
+SC.forEach(([f,a,b],k)=>{
+  const d=document.createElement('div');d.className='scr';d.id='s'+k;d.innerHTML=`<img src="../dist/raw/th-${f}.png">`;scr.appendChild(d);
+  [['a',a,220,''],['b',b,345,'y']].forEach(([n,tx,top,cls])=>{const c=document.createElement('div');c.className='abs mask';c.id=`c${k}${n}`;c.style.cssText=`top:${top}px;height:140px;font-size:${tx.length>16?88:104}px`;c.innerHTML=`<span class="line ${cls}">${tx}</span>`;caps.appendChild(c)});
+});
+const sT=k=>T0+DT*k;
+function render(t){
+  set($('b1'),{x:Math.sin(t*.7)*60,y:t*-25});set($('b2'),{x:Math.cos(t*.6)*70,y:t*-35});set($('b3'),{x:t*30,y:Math.sin(t)*40});
+  const hookOut=1.75, ho=inC(prog(t,hookOut,.28));
+  [['h1',0.0],['h2',0.14],['h3',0.28],['h4',0.6]].forEach(([id,t0])=>{const p=outQ(prog(t,t0,.5));set($(id),{y:(1-p)*80-ho*70,s:.92+.08*p,a:cl(p*3)*(1-ho)})});
+  const pin=outQ(prog(t,PH_IN,.7)),pout=inC(prog(t,PH_OUT,.4));
+  const bob=Math.sin(t*2.0)*7,ph=$('phone');
+  ph.style.opacity=pin*(1-pout);
+  ph.style.transform=`translate(0,${(1-pin)*520+pout*320+bob}px) scale(${.9+.1*pin-pout*.12})`;
+  SC.forEach((_,k)=>{
+    const el=$('s'+k),img=el.firstElementChild;
+    const t0=sT(k),t1=k<SC.length-1?sT(k+1):99;
+    const ein=k==0?1:outQ(prog(t,t0,.55)),eout=k<SC.length-1?std(prog(t,t1,.5)):0;
+    el.style.transform=`translateX(${(1-ein)*100-eout*28}%)`;el.style.opacity=1-eout*.8;
+    el.style.visibility=((t<t0-.01&&k>0)||eout>=1)?'hidden':'visible';
+    const kb=cl((t-t0)/((k<SC.length-1?t1:PH_OUT)-t0+.5));img.style.transform=`scale(${1+.04*kb})`;
+    const tout=k<SC.length-1?t1:PH_OUT;
+    maskIn($(`c${k}a`),t,t0+.1,tout);maskIn($(`c${k}b`),t,t0+.2,tout);
+  });
+  const ip=outQ(prog(t,END,.55));set($('icon'),{s:.6+.4*ip,y:(1-ip)*40+(ip>=1?Math.sin(t*2.2)*5:0),a:cl(ip*3)});
+  const E=(id,t0,d)=>{const p=outQ(prog(t,t0,.5));set($(id),{y:(1-p)*d,a:p})};
+  E('e1',END+.15,70);E('e1b',END+.3,50);E('e2',END+.5,50);E('e3',END+.85,50);E('e4',END+1.0,50);
+}
+window.render=render;window.TOTAL=END+4.0;
+</script></body></html>

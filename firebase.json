@@ -1,0 +1,12 @@
+{
+  "auth": {
+    "providers": {
+      "anonymous": false,
+      "emailPassword": false,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "AA 프랜차이즈 - 쉽게하는창업",
+        "supportEmail": "motoraathailand@gmail.com"
+      }
+    }
+  }
+}

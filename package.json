@@ -1,0 +1,26 @@
+{
+  "name": "aa-franchise-kr",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AA 프랜차이즈 - 쉽게하는창업 — Korea franchise guide. Android (Capacitor 7) bundled UI. BYOK AI, offline-first data. No operator server.",
+  "scripts": {
+    "brand": "node scripts/apply-brand.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "apk:debug": "bash scripts/build-debug.sh noads",
+    "scrape": "node scraper/fetch.mjs && node scraper/build-brands.mjs",
+    "data": "node scraper/build-brands.mjs",
+    "build:test": "node scripts/build-app.mjs noads"
+  },
+  "dependencies": {
+    "@capacitor-firebase/authentication": "^7.5.0",
+    "@capacitor/android": "^7.6.10",
+    "@capacitor/app": "^7.0.4",
+    "@capacitor/cli": "^7.6.10",
+    "@capacitor/clipboard": "^7.0.4",
+    "@capacitor/core": "^7.6.10",
+    "@capacitor/keyboard": "^7.0.6",
+    "@capawesome/capacitor-app-update": "^7.2.0"
+  },
+  "license": "UNLICENSED",
+  "type": "module"
+}
